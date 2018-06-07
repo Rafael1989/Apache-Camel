@@ -61,7 +61,7 @@ public class RotaNegociacoes {
 	    mysqlDs.setServerName("localhost");
 	    mysqlDs.setPort(3306);
 	    mysqlDs.setUser("root");
-	    mysqlDs.setPassword("");
+	    mysqlDs.setPassword("root");
 	    return mysqlDs;
 	}
 }
