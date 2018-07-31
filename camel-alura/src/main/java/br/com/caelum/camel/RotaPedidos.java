@@ -14,7 +14,8 @@ public class RotaPedidos {
 		context.addRoutes(new RouteBuilder() {
 			@Override
 			public void configure() throws Exception {
-				errorHandler(deadLetterChannel("file:erro")
+				errorHandler(deadLetterChannel("activemq:queue:pedidos.DLQ")
+						.useOriginalMessage()
 						.logExhaustedMessageHistory(true)
 						.maximumRedeliveries(3)
 						.redeliverDelay(5000)
