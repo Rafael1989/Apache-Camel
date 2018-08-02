@@ -1,5 +1,6 @@
 package br.com.caelum.camel;
 
+import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -11,6 +12,7 @@ public class RotaPedidos {
 	public static void main(String[] args) throws Exception {
 
 		CamelContext context = new DefaultCamelContext();
+		context.addComponent("activemq", ActiveMQComponent.activeMQComponent("tcp://localhost:61616"));
 		context.addRoutes(new RouteBuilder() {
 			@Override
 			public void configure() throws Exception {
@@ -20,15 +22,16 @@ public class RotaPedidos {
 						.maximumRedeliveries(3)
 						.redeliverDelay(5000)
 						.onRedelivery(new Processor() {
-					@Override
-					public void process(Exchange exchange) throws Exception {
-						int couter = (int)exchange.getIn().getHeader(Exchange.REDELIVERY_COUNTER);
-						int max = (int)exchange.getIn().getHeader(Exchange.REDELIVERY_MAX_COUNTER);
-						System.out.println("Redelivery"+ couter + "/" + max);
-					}
+							@Override
+							public void process(Exchange exchange) throws Exception {
+								int couter = (int)exchange.getIn().getHeader(Exchange.REDELIVERY_COUNTER);
+								int max = (int)exchange.getIn().getHeader(Exchange.REDELIVERY_MAX_COUNTER);
+								System.out.println("Redelivery"+ couter + "/" + max);
+							}
 				}));
 				
-				from("file:pedidos?delay=5s&noop=true").
+				//from("file:pedidos?delay=5s&noop=true").
+				from("activemq:queue:pedidos").
 				log("${file:name}").
 				routeId("rota-pedidos").
 				delay(1000).
